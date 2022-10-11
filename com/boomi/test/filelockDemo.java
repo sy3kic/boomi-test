@@ -13,9 +13,6 @@ import java.net.InetAddress;
 //java -cp filelockDemo.jar com.boomi.filelockDemo /<NFS directory path>/test.lock
 public class filelockDemo {
 	public static final int MAX_LOCKS = 100;
-	//public static final String FMT_FAILED = "Failed locking file {0}";
-	//public static final String FMT_LOCK = "{0}: Locked file {1} in {2} ms";
-	//public static final String FMT_UNLOCK = "{0}: Unlocked file {1} in {2} ms";
 	public static final String FMT_WRITE = "{0} on {1} writing to file after lock\n";
 
 	public static void main(String[] args) {
