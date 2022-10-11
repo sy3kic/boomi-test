@@ -15,6 +15,7 @@ public class filelockDemo {
 	public static final String FMT_LOCK = "Successfully locked file {0}";
 
 	public static void main(String[] args) {
+		RandomAccessFile file = null;
 		FileChannel channel = null;
 		FileLock fileLock = null;
 		Boolean forUpdate = true;
@@ -30,7 +31,8 @@ public class filelockDemo {
 			while (tryLocks < MAX_LOCKS) {
 				try {
 					// Attempt to acquire an exclusive lock
-					channel = new RandomAccessFile(lockFile, "rw").getChannel();
+					file = new RandomAccessFile(lockFile, "rw");
+					channel = file.getChannel();
 					fileLock = channel.lock(0L, Long.MAX_VALUE, !forUpdate);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -38,10 +40,13 @@ public class filelockDemo {
 
 				if (fileLock == null) {
 					System.out.println(MessageFormat.format(FMT_FAILED, lockFile.getAbsolutePath()));
-					Thread.sleep(10000);//10
+					//Thread.sleep(10000);//10
 				} else {
 					System.out.println(MessageFormat.format(FMT_LOCK, lockFile.getAbsolutePath()));
-					Thread.sleep(10000);//10
+					if (file != null) {
+						file.writeChars("writing after lock");
+					}
+					//Thread.sleep(10000);//10
 					releaseLockChannel(channel);
 				}
 			}
