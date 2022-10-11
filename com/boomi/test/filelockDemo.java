@@ -8,14 +8,15 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.text.MessageFormat;
+import java.net.InetAddress;  
 
 //java -cp filelockDemo.jar com.boomi.filelockDemo /<NFS directory path>/test.lock
 public class filelockDemo {
 	public static final int MAX_LOCKS = 100;
-	public static final String FMT_FAILED = "Failed locking file {0}";
-	public static final String FMT_LOCK = "{0}: Locked file {1} in {2} ms";
-	public static final String FMT_UNLOCK = "{0}: Unlocked file {1} in {2} ms";
-	public static final String FMT_WRITE = "{0}: Written to file {1} in {2} ms";
+	//public static final String FMT_FAILED = "Failed locking file {0}";
+	//public static final String FMT_LOCK = "{0}: Locked file {1} in {2} ms";
+	//public static final String FMT_UNLOCK = "{0}: Unlocked file {1} in {2} ms";
+	public static final String FMT_WRITE = "{0} on {1} writing to file after lock\n";
 
 	public static void main(String[] args) {
 		RandomAccessFile file = null;
@@ -34,7 +35,8 @@ public class filelockDemo {
 			while (tryLocks <= MAX_LOCKS) {
 				
 				// randomize wait timeout
-				int timeout = new Random().nextInt(1000);				
+				int timeout = new Random().nextInt(1000);
+				String fileContent = MessageFormat.format(FMT_WRITE, tryLocks, InetAddress.getLocalHost().getHostName());
 				
 				long startLock = System.currentTimeMillis();
 				try {
@@ -47,18 +49,18 @@ public class filelockDemo {
 				}				
 
 				if (fileLock == null) {
-					System.out.println(MessageFormat.format(FMT_FAILED, lockFile.getAbsolutePath()));
+					System.out.println(MessageFormat.format( "Failed locking file {0}", lockFile.getAbsolutePath()));
 					Thread.sleep(timeout);//1
 				} else {
-					System.out.println(MessageFormat.format(FMT_LOCK, tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-startLock));
+					System.out.println(MessageFormat.format("{0}: Locked file {1} in {2} ms", tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-startLock));
 					if (file != null) {
 						long writeTime = System.currentTimeMillis();
-						file.writeChars("writing after lock");
-						System.out.println(MessageFormat.format(FMT_WRITE, tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-writeTime));
+						file.writeChars(fileContent);
+						System.out.println(MessageFormat.format("{0}: Write to file {1} in {2} ms", tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-writeTime));
 					}
 					long releaseLock = System.currentTimeMillis();
 					releaseLockChannel(channel);
-					System.out.println(MessageFormat.format(FMT_UNLOCK, tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-releaseLock));
+					System.out.println(MessageFormat.format("{0}: Unlocked file {1} in {2} ms", tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-releaseLock));
 					Thread.sleep(timeout);//1
 				}
 				tryLocks++;
