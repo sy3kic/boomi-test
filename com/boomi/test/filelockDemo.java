@@ -32,10 +32,10 @@ public class filelockDemo {
 			while (tryLocks <= MAX_LOCKS) {
 				
 				// randomize wait timeout
-				int timeout = new Random().nextInt(100);
+				int timeout = new Random().nextInt(200);
 				String fileContent = MessageFormat.format(FMT_WRITE, tryLocks, InetAddress.getLocalHost().getHostName());
 				
-				long startLock = System.currentTimeMillis();
+				long startLock = System.nanoTime();
 				try {
 					// Attempt to acquire an exclusive lock
 					file = new RandomAccessFile(lockFile, "rw");
@@ -49,16 +49,17 @@ public class filelockDemo {
 					System.out.println(MessageFormat.format( "Failed locking file {0}", lockFile.getAbsolutePath()));
 					Thread.sleep(timeout);//1
 				} else {
-					System.out.println(MessageFormat.format("{0}: Locked file {1} in {2} ms", tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-startLock));
+					System.out.println(MessageFormat.format("{0}: Locked file {1} in {2} ns", tryLocks, lockFile.getAbsolutePath(), System.nanoTime()-startLock));
 					if (file != null) {
-						long writeTime = System.currentTimeMillis();
+						long writeTime = System.nanoTime();
 						file.writeChars(fileContent);
-						System.out.println(MessageFormat.format("{0}: Write to file {1} in {2} ms", tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-writeTime));
+						System.out.println(MessageFormat.format("{0}: Write to file {1} in {2} ns", tryLocks, lockFile.getAbsolutePath(), System.nanoTime()-writeTime));
 					}
-					long releaseLock = System.currentTimeMillis();
+					long releaseLock = System.nanoTime();
 					releaseLockChannel(channel);
-					System.out.println(MessageFormat.format("{0}: Unlocked file {1} in {2} ms", tryLocks, lockFile.getAbsolutePath(), System.currentTimeMillis()-releaseLock));
-					Thread.sleep(timeout);//1
+					System.out.println(MessageFormat.format("{0}: Unlocked file {1} in {2} ns", tryLocks, lockFile.getAbsolutePath(), System.nanoTime()-releaseLock));
+					System.out.println(MessageFormat.format("{0}: Waiting for {1} ns", tryLocks, timeout));
+					Thread.sleep(timeout);
 				}
 				tryLocks++;
 				System.out.println("-------");
