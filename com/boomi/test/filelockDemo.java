@@ -12,7 +12,7 @@ import java.net.InetAddress;
 
 //java -cp filelockDemo.jar com.boomi.filelockDemo /<NFS directory path>/test.lock
 public class filelockDemo {
-	public static final int MAX_LOCKS = 100;
+	public static final int MAX_LOCKS = 300;
 	public static final String FMT_WRITE = "{0} on {1} writing to file after lock\n";
 
 	public static void main(String[] args) {
@@ -32,7 +32,7 @@ public class filelockDemo {
 			while (tryLocks <= MAX_LOCKS) {
 				
 				// randomize wait timeout
-				int timeout = new Random().nextInt(1000);
+				int timeout = new Random().nextInt(100);
 				String fileContent = MessageFormat.format(FMT_WRITE, tryLocks, InetAddress.getLocalHost().getHostName());
 				
 				long startLock = System.currentTimeMillis();
