@@ -36,26 +36,38 @@ public class filelockDemo {
 				String fileContent = MessageFormat.format(FMT_WRITE, tryLocks, InetAddress.getLocalHost().getHostName());
 				
 				long startLock = System.nanoTime();
+				System.out.println(MessageFormat.format( "{0}: Start lock try", tryLocks));
 				try {
 					// Attempt to acquire an exclusive lock
+					long timeRandomAccessFile = System.nanoTime();
+					System.out.println(MessageFormat.format( "{0}: Start RandomAccessFile", tryLocks));
 					file = new RandomAccessFile(lockFile, "rw");
+					System.out.println(MessageFormat.format( "{0}: Finish RandomAccessFile took {1}", tryLocks, System.nanoTime()-timeRandomAccessFile));
+					long timeChannel = System.nanoTime();
+					System.out.println(MessageFormat.format( "{0}: Start getChannel", tryLocks));
 					channel = file.getChannel();
+					System.out.println(MessageFormat.format( "{0}: Finish getChannel took {1}", tryLocks, System.nanoTime()-timeChannel));
+					long timeLock = System.nanoTime();
+					System.out.println(MessageFormat.format( "{0}: Start channel.lock", tryLocks));
 					fileLock = channel.lock(0L, Long.MAX_VALUE, !forUpdate);
+					System.out.println(MessageFormat.format( "{0}: Finish channel.lock took {1}", tryLocks, System.nanoTime()-timeLock));					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}				
 
 				if (fileLock == null) {
-					System.out.println(MessageFormat.format( "Failed locking file {0}", lockFile.getAbsolutePath()));
+					System.out.println(MessageFormat.format( "{0}: Failed locking file {1}", tryLocks, lockFile.getAbsolutePath()));
 					Thread.sleep(timeout);//1
 				} else {
 					System.out.println(MessageFormat.format("{0}: Locked file {1} in {2} ns", tryLocks, lockFile.getAbsolutePath(), System.nanoTime()-startLock));
 					if (file != null) {
 						long writeTime = System.nanoTime();
+						System.out.println(MessageFormat.format( "{0}: Start write to file", tryLocks));
 						file.writeChars(fileContent);
 						System.out.println(MessageFormat.format("{0}: Write to file {1} in {2} ns", tryLocks, lockFile.getAbsolutePath(), System.nanoTime()-writeTime));
 					}
 					long releaseLock = System.nanoTime();
+					System.out.println(MessageFormat.format( "{0}: Start releaseLockChannel", tryLocks));
 					releaseLockChannel(channel);
 					System.out.println(MessageFormat.format("{0}: Unlocked file {1} in {2} ns", tryLocks, lockFile.getAbsolutePath(), System.nanoTime()-releaseLock));
 					System.out.println(MessageFormat.format("{0}: Waiting for {1} ns", tryLocks, timeout));
