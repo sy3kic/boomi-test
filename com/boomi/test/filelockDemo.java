@@ -20,6 +20,13 @@ public class filelockDemo {
 		FileChannel channel = null;
 		FileLock fileLock = null;
 		Boolean forUpdate = true;
+
+		// Check how many arguments were passed in
+		if (args.length == 0) {
+			System.out.println("missing lock file argument, please provide directory and path");
+			System.out.println("java -jar filelockDemo.jar /<NFS directory path>/lockfile");
+			System.exit(0);
+		}
 		
 		try {
 			File lockFile = new File(args[0]);
