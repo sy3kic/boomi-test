@@ -2,13 +2,13 @@
 package com.boomi.test;
 
 import java.io.File;
-import java.util.Random;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.InetAddress;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.text.MessageFormat;
-import java.net.InetAddress;  
+import java.util.Random;
 
 //java -cp filelockDemo.jar com.boomi.filelockDemo /<NFS directory path>/test.lock
 public class filelockDemo {
